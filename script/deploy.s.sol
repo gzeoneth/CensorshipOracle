@@ -10,6 +10,8 @@ contract DeployScript is Script {
     function run() public {
         vm.createSelectFork(vm.rpcUrl("goerli"));
         vm.broadcast();
-        new CensorshipOraclePOC();
+        CensorshipOraclePOC poc = new CensorshipOraclePOC();
+        vm.broadcast();
+        poc.startTest(10, 1_000_000);
     }
 }

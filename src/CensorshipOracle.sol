@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import "./ICensorshipOracle.sol";
 
-contract CensorshipOracle is ICensorshipOracle {
+contract CensorshipOraclePOC is ICensorshipOracle {
     uint256 public constant BASE = 100; // 100%
     uint256 public constant POS_BLOCK_TIME = 12;
     mapping(bytes32 => TestInfo) public tests;
@@ -23,8 +23,6 @@ contract CensorshipOracle is ICensorshipOracle {
         )
     {
         if (percentNoncensoringValidators == 10 && inverseConfidenceLevel == 1_000_000) {
-            return (688, 34);
-        } else if (percentNoncensoringValidators == 10 && inverseConfidenceLevel == 1_000_000) {
             return (225, 4);
         } else {
             revert("NOT_IMPLEMENTED");

@@ -91,10 +91,10 @@ contract CensorshipOraclePOC is ICensorshipOracle {
         if (block.timestamp < test.testResultAvailableTimestamp) {
             revert TooSoon();
         }
-        (uint256 durationBlocks, uint256 maxMissBlock) =
-            testParameters(test.percentNoncensoringValidators, test.inverseConfidenceLevel);
+        (, uint256 maxMissBlock) = testParameters(test.percentNoncensoringValidators, test.inverseConfidenceLevel);
         uint256 numBlocks = block.number - test.testStartBlock;
-        if (numBlocks + maxMissBlock >= durationBlocks) {
+        uint256 expectedBlocks = ((block.timestamp - test.testStartTimestamp) / POS_BLOCK_TIME);
+        if (numBlocks + maxMissBlock >= expectedBlocks) {
             test.nonCensoredBlockWasIncluded = true;
         }
         test.testHasFinished = true;

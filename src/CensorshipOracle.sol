@@ -10,6 +10,7 @@ contract CensorshipOraclePOC is ICensorshipOracle {
 
     error AlreadyFinished();
     error TooSoon();
+    error NoSuchTest();
 
     event TestStarted(bytes32 indexed testId, uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel);
     event TestFinished(bytes32 indexed testId, bool nonCensoredBlockWasIncluded);
@@ -85,6 +86,9 @@ contract CensorshipOraclePOC is ICensorshipOracle {
         )
     {
         TestInfo storage test = tests[testId];
+        if (test.testStartTimestamp == 0){
+            revert NoSuchTest();
+        }
         if (test.testHasFinished) {
             revert AlreadyFinished();
         }

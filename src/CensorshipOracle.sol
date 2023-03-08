@@ -5,7 +5,7 @@ import "./ICensorshipOracle.sol";
 
 contract CensorshipOracle is ICensorshipOracle {
     uint256 public constant BASE = 100; // 100%
-    uint256 public constant POS_BLOCK_TIME =  12;
+    uint256 public constant POS_BLOCK_TIME = 12;
     mapping(bytes32 => TestInfo) public tests;
 
     error AlreadyFinished();
@@ -35,7 +35,8 @@ contract CensorshipOracle is ICensorshipOracle {
         external
         returns (bytes32, uint256, uint256)
     {
-        (uint256 durationBlocks, uint256 maxMissBlock) = testParameters(percentNoncensoringValidators, inverseConfidenceLevel);
+        (uint256 durationBlocks, uint256 maxMissBlock) =
+            testParameters(percentNoncensoringValidators, inverseConfidenceLevel);
         bytes32 testId = keccak256(
             abi.encodePacked(block.number, block.timestamp, percentNoncensoringValidators, inverseConfidenceLevel)
         );
@@ -92,7 +93,8 @@ contract CensorshipOracle is ICensorshipOracle {
         if (block.timestamp < test.testResultAvailableTimestamp) {
             revert TooSoon();
         }
-        (uint256 durationBlocks, uint256 maxMissBlock) = testParameters(test.percentNoncensoringValidators, test.inverseConfidenceLevel);
+        (uint256 durationBlocks, uint256 maxMissBlock) =
+            testParameters(test.percentNoncensoringValidators, test.inverseConfidenceLevel);
         uint256 numBlocks = block.number - test.testStartBlock;
         if (numBlocks + maxMissBlock >= durationBlocks) {
             test.nonCensoredBlockWasIncluded = true;

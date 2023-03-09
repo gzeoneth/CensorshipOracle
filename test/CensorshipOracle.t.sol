@@ -52,6 +52,11 @@ contract CensorshipOracleTest is Test {
         oracle.finishAndGetTestInfo(testId);
     }
 
+    function testDuplicateTestSuccess() external {
+        testStartTest();
+        testStartTest();
+    }
+
     function testRevertTooSoon() external {
         bytes32 testId = testStartTest();
         (,,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);

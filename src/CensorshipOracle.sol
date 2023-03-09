@@ -25,6 +25,8 @@ contract CensorshipOraclePOC is ICensorshipOracle {
     {
         if (percentNoncensoringValidators == 10 && inverseConfidenceLevel == 1_000_000) {
             return (225, 4);
+        } else if (percentNoncensoringValidators == 10 && inverseConfidenceLevel == 100) {
+            return (223, 12);
         } else {
             revert("NOT_IMPLEMENTED");
         }
@@ -86,7 +88,7 @@ contract CensorshipOraclePOC is ICensorshipOracle {
         )
     {
         TestInfo storage test = tests[testId];
-        if (test.testStartTimestamp == 0){
+        if (test.testStartTimestamp == 0) {
             revert NoSuchTest();
         }
         if (test.testHasFinished) {

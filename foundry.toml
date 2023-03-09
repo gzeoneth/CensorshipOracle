@@ -5,5 +5,6 @@ libs = ['lib']
 
 [rpc_endpoints]
 goerli = "https://rpc.ankr.com/eth_goerli"
+sepolia = "https://rpc.ankr.com/eth_sepolia"
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

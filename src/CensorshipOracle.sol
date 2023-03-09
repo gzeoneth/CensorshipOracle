@@ -11,6 +11,7 @@ contract CensorshipOraclePOC is ICensorshipOracle {
     uint256 public constant POS_BLOCK_TIME = 12;
     mapping(bytes32 => TestInfo) public tests;
 
+    error AlreadyStarted();
     error AlreadyFinished();
     error TooSoon();
     error NoSuchTest();
@@ -44,6 +45,9 @@ contract CensorshipOraclePOC is ICensorshipOracle {
         bytes32 testId = keccak256(
             abi.encodePacked(block.number, block.timestamp, percentNoncensoringValidators, inverseConfidenceLevel)
         );
+        if (tests[testId].testStartTimestamp != 0) {
+            revert AlreadyStarted();
+        }
         tests[testId] = TestInfo({
             percentNoncensoringValidators: percentNoncensoringValidators.toUint8(),
             inverseConfidenceLevel: inverseConfidenceLevel.toUint32(),

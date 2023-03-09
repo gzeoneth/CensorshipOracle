@@ -25,22 +25,24 @@ contract CensorshipOracleTest is Test {
         return testId;
     }
 
-    function testCompleteTestWithCensor() public {
+    function testCompleteTestWithCensor(uint256 missedBlocks) public {
         bytes32 testId = testStartTest();
-        (,,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);
-        uint256 missedBlocks = 20;
-        vm.roll(block.number + (testResultAvailableTimestamp - block.timestamp) / 12 + 1 - missedBlocks);
+        (uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);
+        (, uint256 maxMissBlock) = oracle.testParameters(percentNoncensoringValidators, inverseConfidenceLevel);        uint256 missedBlocks = 20;
+        vm.assume(missedBlocks > maxMissBlock);
+        vm.roll(block.number + (testResultAvailableTimestamp - block.timestamp) / 12 - missedBlocks);
         vm.warp(testResultAvailableTimestamp);
         vm.expectEmit(true, true, true, true);
         emit TestFinished(testId, false);
         oracle.finishAndGetTestInfo(testId);
     }
 
-    function testCompleteTestWithoutCensor() public {
+    function testCompleteTestWithoutCensor(uint256 missedBlocks) public {
         bytes32 testId = testStartTest();
-        (,,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);
-        uint256 missedBlocks = 1;
-        vm.roll(block.number + (testResultAvailableTimestamp - block.timestamp) / 12 + 1 - missedBlocks);
+        (uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);
+        (, uint256 maxMissBlock) = oracle.testParameters(percentNoncensoringValidators, inverseConfidenceLevel);
+        vm.assume(missedBlocks <= maxMissBlock);
+        vm.roll(block.number + (testResultAvailableTimestamp - block.timestamp) / 12 - missedBlocks);
         vm.warp(testResultAvailableTimestamp);
         vm.expectEmit(true, true, true, true);
         emit TestFinished(testId, true);

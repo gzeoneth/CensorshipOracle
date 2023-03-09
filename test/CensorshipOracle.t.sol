@@ -27,8 +27,10 @@ contract CensorshipOracleTest is Test {
 
     function testCompleteTestWithCensor(uint256 missedBlocks) public {
         bytes32 testId = testStartTest();
-        (uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);
-        (, uint256 maxMissBlock) = oracle.testParameters(percentNoncensoringValidators, inverseConfidenceLevel);        uint256 missedBlocks = 20;
+        (uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel,, uint256 testResultAvailableTimestamp,,)
+        = oracle.getTestInfo(testId);
+        (, uint256 maxMissBlock) = oracle.testParameters(percentNoncensoringValidators, inverseConfidenceLevel);
+        uint256 missedBlocks = 20;
         vm.assume(missedBlocks > maxMissBlock);
         vm.roll(block.number + (testResultAvailableTimestamp - block.timestamp) / 12 - missedBlocks);
         vm.warp(testResultAvailableTimestamp);
@@ -39,7 +41,8 @@ contract CensorshipOracleTest is Test {
 
     function testCompleteTestWithoutCensor(uint256 missedBlocks) public {
         bytes32 testId = testStartTest();
-        (uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel,, uint256 testResultAvailableTimestamp,,) = oracle.getTestInfo(testId);
+        (uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel,, uint256 testResultAvailableTimestamp,,)
+        = oracle.getTestInfo(testId);
         (, uint256 maxMissBlock) = oracle.testParameters(percentNoncensoringValidators, inverseConfidenceLevel);
         vm.assume(missedBlocks <= maxMissBlock);
         vm.roll(block.number + (testResultAvailableTimestamp - block.timestamp) / 12 - missedBlocks);

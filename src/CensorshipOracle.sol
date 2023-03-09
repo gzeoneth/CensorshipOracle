@@ -11,10 +11,10 @@ contract CensorshipOraclePOC is ICensorshipOracle {
     uint256 public constant POS_BLOCK_TIME = 12;
     mapping(bytes32 => TestInfo) public tests;
 
-    error AlreadyStarted();
     error AlreadyFinished();
     error TooSoon();
     error NoSuchTest();
+    error DuplicatedId();
 
     event TestStarted(bytes32 indexed testId, uint256 percentNoncensoringValidators, uint256 inverseConfidenceLevel);
     event TestFinished(bytes32 indexed testId, bool nonCensoredBlockWasIncluded);
@@ -45,18 +45,23 @@ contract CensorshipOraclePOC is ICensorshipOracle {
         bytes32 testId = keccak256(
             abi.encodePacked(block.number, block.timestamp, percentNoncensoringValidators, inverseConfidenceLevel)
         );
-        if (tests[testId].testStartTimestamp != 0) {
-            revert AlreadyStarted();
+        if (tests[testId].testStartTimestamp == 0) {
+            tests[testId] = TestInfo({
+                percentNoncensoringValidators: percentNoncensoringValidators.toUint8(),
+                inverseConfidenceLevel: inverseConfidenceLevel.toUint32(),
+                testStartTimestamp: block.timestamp.toUint64(),
+                testResultAvailableTimestamp: (block.timestamp + durationBlocks * POS_BLOCK_TIME).toUint64(),
+                testHasFinished: false,
+                nonCensoredBlockWasIncluded: false,
+                testStartBlock: block.number.toUint64()
+            });
+        } else {
+            if (tests[testId].testStartTimestamp != block.timestamp) {
+                // This should never happen
+                // But if it does, we don't want to overwrite the existing test
+                revert DuplicatedId();
+            }
         }
-        tests[testId] = TestInfo({
-            percentNoncensoringValidators: percentNoncensoringValidators.toUint8(),
-            inverseConfidenceLevel: inverseConfidenceLevel.toUint32(),
-            testStartTimestamp: block.timestamp.toUint64(),
-            testResultAvailableTimestamp: (block.timestamp + durationBlocks * POS_BLOCK_TIME).toUint64(),
-            testHasFinished: false,
-            nonCensoredBlockWasIncluded: false,
-            testStartBlock: block.number.toUint64()
-        });
         emit TestStarted(testId, percentNoncensoringValidators, inverseConfidenceLevel);
         return (testId, durationBlocks, maxMissBlock);
     }

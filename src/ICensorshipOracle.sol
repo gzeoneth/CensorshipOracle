@@ -2,13 +2,13 @@
 pragma solidity 0.8.19;
 
 struct TestInfo {
-    uint256 percentNoncensoringValidators;
-    uint256 inverseConfidenceLevel;
-    uint256 testStartTimestamp;
-    uint256 testResultAvailableTimestamp;
+    uint8 percentNoncensoringValidators;
+    uint32 inverseConfidenceLevel;
+    uint64 testStartTimestamp;
+    uint64 testResultAvailableTimestamp;
     bool testHasFinished;
     bool nonCensoredBlockWasIncluded;
-    uint256 testStartBlock;
+    uint64 testStartBlock;
 }
 
 // https://ethresear.ch/t/reducing-challenge-times-in-rollups/14997

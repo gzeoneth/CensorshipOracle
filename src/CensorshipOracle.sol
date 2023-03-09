@@ -2,8 +2,11 @@
 pragma solidity 0.8.19;
 
 import "./ICensorshipOracle.sol";
+import "./lib/SafeCast.sol";
 
 contract CensorshipOraclePOC is ICensorshipOracle {
+    using SafeCast for uint256;
+
     uint256 public constant BASE = 100; // 100%
     uint256 public constant POS_BLOCK_TIME = 12;
     mapping(bytes32 => TestInfo) public tests;
@@ -42,13 +45,13 @@ contract CensorshipOraclePOC is ICensorshipOracle {
             abi.encodePacked(block.number, block.timestamp, percentNoncensoringValidators, inverseConfidenceLevel)
         );
         tests[testId] = TestInfo({
-            percentNoncensoringValidators: percentNoncensoringValidators,
-            inverseConfidenceLevel: inverseConfidenceLevel,
-            testStartTimestamp: block.timestamp,
-            testResultAvailableTimestamp: block.timestamp + durationBlocks * POS_BLOCK_TIME,
+            percentNoncensoringValidators: percentNoncensoringValidators.toUint8(),
+            inverseConfidenceLevel: inverseConfidenceLevel.toUint32(),
+            testStartTimestamp: block.timestamp.toUint64(),
+            testResultAvailableTimestamp: (block.timestamp + durationBlocks * POS_BLOCK_TIME).toUint64(),
             testHasFinished: false,
             nonCensoredBlockWasIncluded: false,
-            testStartBlock: block.number
+            testStartBlock: block.number.toUint64()
         });
         emit TestStarted(testId, percentNoncensoringValidators, inverseConfidenceLevel);
         return (testId, durationBlocks, maxMissBlock);
